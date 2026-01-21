@@ -1,0 +1,163 @@
+
+--1. Identifying Which Campaigns Drive the Most Traffic
+
+--This establishes top-of-funnel performance. It shows which campaigns are responsible for driving traffic to the site,
+  --measured by product or page views, along with how many unique users those views represent. This helps separate high-volume campaigns from low-impact ones.
+
+SELECT
+    c.campaign_id,
+    e.source,
+    COUNT(*) AS total_events,
+    COUNT(DISTINCT e.user_id) AS unique_users
+FROM events_clean e
+JOIN campaigns c
+    ON e.source = c.source
+WHERE e.event_type_clean = 'view'
+GROUP BY c.campaign_id, e.source
+ORDER BY total_events DESC;
+
+--2. Understanding Funnel Drop-Off Before Conversion 
+  --This provides a baseline funnel view across all users. It shows how users move from viewing through purchase and highlights where the largest 
+  --drop-offs occur. The ordered funnel ensures results are interpreted in business sequence, not alphabetical order.
+
+SELECT
+    e.event_type_clean,
+    COUNT(*) AS event_count,
+    COUNT(DISTINCT e.user_id) AS users
+FROM events_clean e
+GROUP BY e.event_type_clean
+ORDER BY
+    CASE e.event_type_clean
+        WHEN 'view' THEN 1
+        WHEN 'add_to_cart' THEN 2
+        WHEN 'checkout' THEN 3
+        WHEN 'purchase' THEN 4
+    END;
+
+--3. Funnel Performance by Campaign
+
+--This breaks funnel behavior down by campaign to identify quality differences. Some campaigns may drive large volumes of views but fail to push users 
+  --further down the funnel, while others may attract fewer users but with stronger intent.
+
+SELECT
+    c.campaign_id,
+    e.event_type_clean,
+    COUNT(DISTINCT e.user_id) AS users
+FROM events_clean e
+JOIN campaigns c
+    ON e.source = c.source
+GROUP BY c.campaign_id, e.event_type_clean
+ORDER BY c.campaign_id;
+
+
+--4. Revenue and Average Order Value by Campaign (Last-Touch Attribution)
+
+--The orders table does not include campaign attribution. To prevent revenue duplication and incorrect joins, a last-touch attribution model was applied at 
+  --the user level. Each order is attributed to the most recent campaign source associated with that user. This allows campaign-level revenue analysis while 
+  --clearly stating the attribution assumption.
+
+WITH user_campaign AS (
+    SELECT
+        e.user_id,
+        MAX(e.source) AS source
+    FROM events_clean e
+    WHERE e.source IS NOT NULL
+    GROUP BY e.user_id)
+
+SELECT
+    c.campaign_id,
+    COUNT(DISTINCT o.order_id) AS orders,
+    ROUND(SUM(o.revenue_clean), 2) AS total_revenue,
+    ROUND(AVG(o.revenue_clean), 2) AS avg_order_value
+FROM orders o
+JOIN user_campaign uc
+    ON o.user_id = uc.user_id
+JOIN campaigns c
+    ON uc.source = c.source
+GROUP BY c.campaign_id
+ORDER BY total_revenue DESC;
+
+
+--5. Campaign Conversion Rates Using True Last-Touch Attribution
+
+--After establishing revenue and AOV, this analysis evaluates campaign efficiency. Using event timestamps, each user is assigned to their most recent campaign 
+  --interaction. Conversion rate is calculated by comparing users exposed to a campaign against orders attributed to that same last touch. This avoids row multiplication 
+  --and ensures clean conversion math.
+
+
+
+WITH
+	last_touch AS (
+		SELECT DISTINCT
+			ON (e.user_id) e.user_id,
+			c.campaign_id
+		FROM
+			events_clean e
+			JOIN campaigns c ON e.source = c.source
+		WHERE
+			e.source IS NOT NULL
+		ORDER BY
+			e.user_id,
+			e.event_timestamp DESC
+	),
+	event_summary AS (
+		SELECT
+			campaign_id,
+			COUNT(DISTINCT user_id) AS users
+		FROM
+			last_touch
+		GROUP BY
+			campaign_id
+	),
+	order_summary AS (
+		SELECT
+			lt.campaign_id,
+			COUNT(DISTINCT o.order_id) AS orders,
+			SUM(o.revenue_clean) AS revenue
+		FROM
+			orders o
+			JOIN last_touch lt ON o.user_id = lt.user_id
+		GROUP BY
+			lt.campaign_id
+	)
+SELECT
+	e.campaign_id,
+	e.users,
+	o.orders,
+	ROUND(o.revenue, 2) AS revenue,
+	ROUND(o.orders::numeric / NULLIF(e.users, 0), 4) AS conversion_rate
+FROM
+	event_summary e
+	LEFT JOIN order_summary o ON e.campaign_id = o.campaign_id
+ORDER BY
+	conversion_rate DESC;
+
+
+--6. Revenue by Behavioral Segment (Beyond the Funnel)
+
+--This analysis looks beyond immediate funnel progression and focuses on long-term user value. Instead of asking whether an action caused a conversion, it examines which 
+  --behaviors are most strongly associated with high-revenue users over time. This helps identify actions correlated with higher lifetime value, not just short-term conversion.
+
+WITH users_by_event AS (
+    SELECT DISTINCT
+        user_id,
+        event_type_clean
+    FROM events_clean
+),
+revenue_by_user AS (
+    SELECT
+        user_id,
+        SUM(revenue_clean) AS user_revenue
+    FROM orders
+    GROUP BY user_id
+)
+SELECT
+    u.event_type_clean,
+    COUNT(DISTINCT u.user_id) AS users,
+    ROUND(SUM(r.user_revenue), 2) AS total_revenue
+FROM users_by_event u
+JOIN revenue_by_user r
+    ON u.user_id = r.user_id
+GROUP BY u.event_type_clean
+ORDER BY total_revenue DESC;
+
