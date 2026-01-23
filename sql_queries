@@ -16,6 +16,8 @@ WHERE e.event_type_clean = 'view'
 GROUP BY c.campaign_id, e.source
 ORDER BY total_events DESC;
 
+[Output from query 1](https://raw.githubusercontent.com/ddettloff17/marketing-funnel-project/refs/heads/main/Marketing%20Funnel%20Project%20SQL%20SS1%20campaign%20traffic.png)
+
 --2. Understanding Funnel Drop-Off Before Conversion 
   --This provides a baseline funnel view across all users. It shows how users move from viewing through purchase and highlights where the largest 
   --drop-offs occur. The ordered funnel ensures results are interpreted in business sequence, not alphabetical order.
