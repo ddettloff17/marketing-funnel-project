@@ -42,8 +42,8 @@ Normalizing campaign source values to support clean joins across datasets
 
 Creating parallel cleaned columns while preserving raw data for auditability
 
-As part of the cleaning process, a structured data quality issue log was maintained to document known inconsistencies, row impact, and resolution decisions. Issues that could not be safely corrected (such as missing emails or blank country values) were intentionally retained as null and handled analytically rather than imputed. The full issue log and supporting Excel screenshots are available in the /assets directory.
-
+As part of the cleaning process, a structured data quality issue log was maintained to document known inconsistencies, row impact, and resolution decisions. Issues that could not be safely corrected (such as missing emails or blank country values) were intentionally retained as null and handled analytically rather than imputed.  
+[The full issue logs and supporting Excel screenshots are available here.](https://github.com/ddettloff17/marketing-funnel-project/tree/08adeadd16dece7c7ea2e5e623320f10c6bfbfbe/assets/data-quality)
 
 <h3>Funnel Modeling and Validation</h3>
 
@@ -77,6 +77,7 @@ This modeling decision:
 
 Prevents revenue inflation, produces consistent, comparable campaign metrics, and establishes a clear attribution assumption for reporting.
 (All attribution logic and supporting queries are documented in the [accompanying SQL file.](https://github.com/ddettloff17/marketing-funnel-project/blob/main/sql_queries))
+[All SQL returns screenshots are available here.](https://github.com/ddettloff17/marketing-funnel-project/blob/main/sql_queries))
 
 <h3>Campaign Conversion Efficiency</h3>
 
