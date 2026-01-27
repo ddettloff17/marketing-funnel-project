@@ -15,3 +15,13 @@ Prior to analysis, quality checks were performed to identify inconsistencies, mi
 
 [View SQL queries](https://github.com/ddettloff17/marketing-funnel-project/blob/main/sql_queries)
 
+<h2>Executive Summary</h2>
+This analysis addresses inconsistent conversion performance and conflicting revenue attribution across marketing channels. Raw event-level behavioral data and order-level revenue data were cleaned and modeled using Excel and SQL to create a consistent reporting foundation.
+
+A standardized funnel was explicitly defined as view → add_to_cart → checkout → purchase, allowing drop-off to be evaluated consistently across campaigns. Because the orders dataset does not contain campaign attribution, a last-touch attribution model was implemented, assigning each order to the most recent campaign interaction prior to purchase. This modeling choice prevents revenue duplication and ensures campaign performance is comparable across sources.
+
+Results show that top-of-funnel volume is not the primary issue. Affiliate campaign_id 4 drives the highest number of users into the funnel and maintains stable progression through early stages. Email campaign_id 2 delivers lower volume but converts at comparable rates, indicating higher user intent. Google Search campaign_id 3 mirrors email behavior with steady funnel progression and no abnormal early-stage drop-off.
+
+Across all campaigns, the largest and most consistent loss of users occurs between checkout and purchase, indicating late-stage conversion friction rather than acquisition inefficiency. This suggests issues related to payment, trust, or checkout experience rather than campaign targeting.
+
+Final modeled outputs include campaign-level funnel performance, conversion rates, and attributed revenue, structured for direct use in Power BI to support ongoing reporting and visualization.
