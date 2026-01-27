@@ -76,8 +76,7 @@ To resolve this, a last-touch attribution model was implemented. Each order was 
 This modeling decision:
 
 Prevents revenue inflation, produces consistent, comparable campaign metrics, and establishes a clear attribution assumption for reporting.
-(All attribution logic and supporting queries are documented in the [accompanying SQL file.](https://github.com/ddettloff17/marketing-funnel-project/blob/main/sql_queries))
-[All SQL returns screenshots are available here.](https://github.com/ddettloff17/marketing-funnel-project/blob/main/sql_queries))
+(All attribution logic and supporting queries are documented in the [accompanying SQL file](https://github.com/ddettloff17/marketing-funnel-project/blob/main/sql_queries) as well as [all SQL returns screenshots are available here.](https://github.com/ddettloff17/marketing-funnel-project/tree/d6204d1ea6f3d4844babdb25b2be6b64b5137869/Assets/SQL-Returns)
 
 <h3>Campaign Conversion Efficiency</h3>
 
