@@ -133,7 +133,60 @@ ORDER BY
 	conversion_rate DESC;
 
 
---6. Revenue by Behavioral Segment (Beyond the Funnel)
+--6. Checkout-to-Purchase Drop-Off by Campaign (Last-Touch Attribution
+--This analysis isolates late-stage funnel friction by campaign. Using the same last-touch attribution model, users who reach checkout are compared against 
+	--those who complete a purchase to quantify checkout abandonment. Drop-off counts and rates are calculated at the campaign level to identify which marketing
+	--efforts drive users most likely to fail at final conversion.
+
+WITH last_touch AS (
+    SELECT DISTINCT ON (e.user_id)
+        e.user_id,
+        c.campaign_id
+    FROM events_clean e
+    JOIN campaigns c
+        ON e.source = c.source
+    WHERE e.source IS NOT NULL
+    ORDER BY e.user_id, e.event_timestamp DESC
+),
+checkout_users AS (
+    SELECT DISTINCT
+        lt.campaign_id,
+        e.user_id
+    FROM events_clean e
+    JOIN last_touch lt
+        ON e.user_id = lt.user_id
+    WHERE e.event_type_clean = 'checkout'
+),
+purchase_users AS (
+    SELECT DISTINCT
+        lt.campaign_id,
+        e.user_id
+    FROM events_clean e
+    JOIN last_touch lt
+        ON e.user_id = lt.user_id
+    WHERE e.event_type_clean = 'purchase'
+)
+SELECT
+    c.campaign_id,
+    COUNT(DISTINCT cu.user_id) AS checkout_users,
+    COUNT(DISTINCT pu.user_id) AS purchase_users,
+    COUNT(DISTINCT cu.user_id) - COUNT(DISTINCT pu.user_id) AS drop_off_users,
+    ROUND(
+        (COUNT(DISTINCT cu.user_id) - COUNT(DISTINCT pu.user_id))::numeric
+        / NULLIF(COUNT(DISTINCT cu.user_id), 0),
+        4
+    ) AS drop_off_rate
+FROM checkout_users cu
+LEFT JOIN purchase_users pu
+    ON cu.user_id = pu.user_id
+    AND cu.campaign_id = pu.campaign_id
+JOIN campaigns c
+    ON cu.campaign_id = c.campaign_id
+GROUP BY c.campaign_id
+ORDER BY drop_off_rate DESC;
+
+
+--7. Revenue by Behavioral Segment (Beyond the Funnel)
 
 --This analysis looks beyond immediate funnel progression and focuses on long-term user value. Instead of asking whether an action caused a conversion, it examines which 
   --behaviors are most strongly associated with high-revenue users over time. This helps identify actions correlated with higher lifetime value, not just short-term conversion.
