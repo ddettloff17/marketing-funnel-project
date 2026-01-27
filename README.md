@@ -117,3 +117,54 @@ Rather than attributing causality, this step highlights behavioral signals corre
 SQL queries are intentionally excluded from the README and [documented separately](https://github.com/ddettloff17/marketing-funnel-project/blob/main/sql_queries) to keep the narrative focused on insights and modeling decisions.
 
 Modeled outputs are structured for direct use in Power BI, including campaign-level funnel metrics, attributed revenue, conversion rates, and drop-off analysis.
+
+<h2>Reccomendations</h2>
+<h3> Prioritize Checkout Conversion Improvements</h3>
+
+The most significant loss of users occurs after checkout initiation, indicating late-stage friction rather than acquisition quality issues.
+
+<i>Recommended actions:</i>
+
+  Audit checkout flow for payment failures, form friction, and latency
+
+  Review trust signals, pricing clarity, and error handling
+
+  Evaluate checkout performance by device and browser to identify technical issues
+
+  Improving checkout completion will likely yield higher revenue impact than increasing top-of-funnel spend.
+
+<h3>Reallocate Marketing Spend Toward High-Intent Channels</h3>
+
+Campaign-level performance shows that lower-volume channels such as email and search convert at rates comparable to or better than higher-volume affiliate traffic.
+
+<i>Recommended actions:</i>
+
+  Maintain affiliate traffic for scale but limit incremental spend
+
+  Increase emphasis on channels demonstrating higher intent and stable conversion
+
+  Optimize campaigns using conversion rate and checkout completion, not traffic volume alone
+
+<h3>Standardize Attribution and Reporting</h3>
+
+Inconsistent revenue reporting was driven by missing attribution logic across datasets.
+
+<i>Recommended actions:</i>
+
+  Establish last-touch attribution as the default reporting standard
+
+  Document attribution assumptions clearly in dashboards and reports
+
+  Use modeled campaign outputs as the single source of truth for performance tracking
+
+<h3>Extend Analysis to Reduce Future Risk</h3>
+
+This analysis resolves immediate questions but highlights opportunities for deeper insight.
+
+<i>Recommended next steps:</i>
+
+  Introduce session-level and device-level funnel analysis
+
+  Segment checkout drop-off by traffic source and platform
+
+  Track cohort-based performance to evaluate long-term user value
