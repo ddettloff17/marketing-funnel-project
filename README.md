@@ -27,6 +27,24 @@ Across all campaigns, the largest and most consistent loss of users occurs betwe
 Final modeled outputs include campaign-level funnel performance, conversion rates, and attributed revenue, structured for direct use in Power BI to support ongoing reporting and visualization.
 
 <h2>Insights Deep Dive</h2>
+
+<h3>Data Cleaning and Preparation</h3>
+
+The analysis began with cleaning and standardizing multiple raw datasets to ensure accurate joins, consistent metrics, and reliable reporting. Initial data inspection revealed inconsistent formatting, mixed data types, and non-standardized values across key fields.
+
+Key cleaning actions were performed in Excel, including:
+
+Standardizing event types into a controlled set of funnel stages (view, add_to_cart, checkout, purchase)
+
+Removing currency symbols and text from revenue fields to enable numeric aggregation
+
+Normalizing campaign source values to support clean joins across datasets
+
+Creating parallel cleaned columns while preserving raw data for auditability
+
+As part of the cleaning process, a structured data quality issue log was maintained to document known inconsistencies, row impact, and resolution decisions. Issues that could not be safely corrected (such as missing emails or blank country values) were intentionally retained as null and handled analytically rather than imputed. The full issue log and supporting Excel screenshots are available in the /assets directory.
+
+
 <h3>Funnel Modeling and Validation</h3>
 
 A standardized marketing funnel was explicitly defined to evaluate user progression and identify friction points. The funnel model used throughout the analysis is:
